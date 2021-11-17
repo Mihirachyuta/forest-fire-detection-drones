@@ -35,7 +35,7 @@ var layout = {
 plot = Plotly.newPlot("myDiv", dataFrame, layout, config);
 var config = {
   mapboxAccessToken:
-    "pk.eyJ1IjoibWloaXJhY2h5dXRhIiwiYSI6ImNrdzBhNzJmMTBkc3kyd3BxZ2Qwcm12YmEifQ.oqfDCGJ9A8F4OLMzcgR7JA",
+    "Access Token",
 };
 
 function fetch_data() {
