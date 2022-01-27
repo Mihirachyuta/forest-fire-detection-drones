@@ -3,6 +3,7 @@ import threading
 import time
 import requests
 
+#forest array
 fire = np.zeros((256,2))
 assignd=np.zeros((256,3))
 reference_arr=np.zeros((16,16))
