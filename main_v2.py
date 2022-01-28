@@ -4,10 +4,11 @@ import numpy as np
 forest=np.zeros((16,16))
 reference_arr=np.zeros((16,16))
 drone_arr=[]
-fire=[]
+fire=np.zeros((256,2))
 
 #array for probable locations of fire
 fire_prob=np.array((256,2))
+fp_p=0
 
 #array that shows the current locations of free drones
 free_Drone_local=[]
@@ -61,11 +62,17 @@ class Drone:
 
 #Add probable locations of fire
 def newpoint(a,b):
-    global fire
-    global assignd
-    global fa
-    global fb
-    pass
+    global fire_prob
+    global fp_p
+    for i in range(-1,2):
+        for j in range(-1,2):
+            tmp_x=a+i
+            tmp_y=b+j
+            if(tmp_x!=a or tmp_y!=b):
+                if(tmp_x<16 and tmp_y<16 and tmp_y>-1 and tmp_x>-1):
+                    fire_prob[fp_p][0]=tmp_x
+                    fire_prob[fp_p][1]=tmp_y
+                    fp_p+=1
     
 
 #function for map routing to move from source to destination
