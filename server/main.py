@@ -103,7 +103,7 @@ class Drones:
                 newpoint(self.x,self.y)
                 self.sendFireCoordinates()
 
-        time.sleep(5)
+        time.sleep(1)
             #forest[self.x][self.y]
             #fire[self.x][self.y]
 
