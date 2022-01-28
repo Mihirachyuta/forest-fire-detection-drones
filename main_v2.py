@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 #array for forest grid
 forest=np.zeros((16,16))
@@ -7,7 +8,7 @@ drone_arr=[]
 fire=np.zeros((256,2))
 
 #array for probable locations of fire
-fire_prob=np.array((256,2))
+fire_prob=np.zeros((256,2))
 fp_p=0
 
 #array that shows the current locations of free drones
@@ -80,7 +81,7 @@ def newpoint(a,b):
 
 #Calculate distance function
 def findDistance(source_x,source_y,dest_x,dest_y):
-    pass
+    return math.sqrt((source_x-dest_x)**2+(source_y-dest_y)**2)
     
 
 #main
