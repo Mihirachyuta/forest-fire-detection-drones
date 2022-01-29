@@ -1,4 +1,3 @@
-
 import numpy as np
 import math
 
@@ -17,8 +16,6 @@ fp_p=0
 free_Drone_local=[]
 no_free_drones=10
 
-#Array for locations checked
-#array for fire found
 
 #Calculate distance function
 def findDistance(source_x,source_y,dest_x,dest_y):
@@ -40,7 +37,29 @@ def newpoint(a,b):
                     fire_prob[fp_p][1]=tmp_y
                     fp_p+=1
 
-#define drone class
+
+
+#Assignment of probable location
+def assign():
+    global no_free_drones
+    global drone_arr
+    global fire_prob
+    while(no_free_drones!=0):
+            i=0
+            if(drone_arr[i].is_assigned==False):
+                min_dist=100
+                for j in range(0,fp_p):
+                    d=findDistance(drone_arr[i].x,drone_arr[i].y,fire_prob[j][0],fire_prob[j][1])
+                    if(d<min_dist):
+                        min_dist=d
+                        drone_arr[i].dest_x=fire_prob[j][0]
+                        drone_arr[i].dest_y=fire_prob[j][1]
+                print(min_dist)
+                drone_arr[i].is_assigned=True
+            no_free_drones=0
+                
+
+
 class Drone:
     #variables
     #current location
@@ -90,44 +109,13 @@ class Drone:
                 if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
                     pass #remove from the array
 
-#Assignment of probable location
-def assign():
-    global no_free_drones
-    global drone_arr
-    global fire_prob
-    while(no_free_drones!=0):
-        for i in range(0,10):
-            if(drone_arr[i].is_assigned==False):
-                min_dist=100
-                for j in range(0,fp_p):
-                    d=findDistance(drone_arr[i].x,drone_arr[i].y,fire_prob[j][0],fire_prob[j][1])
-                    if(d<min_dist):
-                        min_dist=d
-                        drone_arr[i].dest_x=fire_prob[j][0]
-                        drone_arr[i].dest_y=fire_prob[j][1]
-                drone_arr[i].is_assigned=True
-                
-
-
-
-    
-
-#function for map routing to move from source to destination
-def a_star_path_plan():
-    pass
-
-
-
-#main
-for i in range(0,9):
-    drone_arr.append(Drone())
-    drone_arr[i].setid(i)
-
-fire.append([7,5])
-newpoint(7,5)
-
-#Cycle start
-#drones check existing location
-for i in range(0,9):
-    drone_arr[i].move_a()
-    drone_arr[i].check()
+drone_arr.append(Drone())
+drone_arr[0].assign(9,10)
+drone_arr[0].setid(0)
+fire[0][0]=5
+fire[0][1]=7
+newpoint(5,7)
+for i in range(0,fp_p):
+    print(fire_prob[i][:])
+assign()
+print(drone_arr[0].dest_x,drone_arr[0].dest_y)
