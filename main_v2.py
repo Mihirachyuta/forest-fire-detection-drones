@@ -2,6 +2,8 @@
 import numpy as np
 import math
 
+from urllib3 import connection_from_url
+
 
 #array for forest grid
 forest=np.zeros((16,16))
@@ -113,8 +115,23 @@ def assign():
     
 
 #function for map routing to move from source to destination
-def a_star_path_plan():
-    pass
+def path_plan(source_x,source_y, dest_x,dest_y):
+    points=[]
+    distances=[]
+    for i in range(0,3):
+        for j in range (0,3):
+            tmp_x=source_x+i
+            tmp_y=source_y+j
+            if(tmp_x<16 and tmp_y<16 and tmp_y>-1 and tmp_x>-1):
+                continue
+            if(tmp_x==source_x and tmp_y==source_y):
+                continue
+            dist=findDistance(tmp_x,tmp_y,dest_x,dest_y)
+            points.append([tmp_x,tmp_y])
+            distances.append(dist)
+    return points, distances
+            
+
 
 
 

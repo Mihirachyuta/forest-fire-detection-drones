@@ -112,9 +112,9 @@ class Drone:
 drone_arr.append(Drone())
 drone_arr[0].assign(9,10)
 drone_arr[0].setid(0)
-fire[0][0]=5
-fire[0][1]=7
-newpoint(5,7)
+fire[0][0]=6
+fire[0][1]=8
+newpoint(6,8)
 for i in range(0,fp_p):
     print(fire_prob[i][:])
 assign()
