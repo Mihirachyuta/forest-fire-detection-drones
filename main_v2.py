@@ -18,7 +18,8 @@ fp_p=0
 #array that shows the current locations of free drones
 free_Drone_local=[]
 no_free_drones=10
-
+drone_locations=[]
+drone_next_locations=[]
 #Array for locations checked
 #array for fire found
 
@@ -63,10 +64,21 @@ class Drone:
 
 
     #Move function - move one cell at a time
+    # def move(self):
+    #     self.x=self.dest_route[self.route_path_point][0]
+    #     self.y=self.dest_route[self.route_path_point][1]
+    #     self.route_path_point+=1
+
     def move(self):
-        self.x=self.dest_route[self.route_path_point][0]
-        self.y=self.dest_route[self.route_path_point][1]
-        self.route_path_point+=1
+        global drone_locations
+        global drone_next_locations
+        points,distances=path_plan(self.x,self.y,self.dest_x,self.dest_y)
+        for x in range(0,8):
+            if points[x] in drone_locations or points[x] in drone_next_locations:
+                continue
+            self.x=points[x][0]
+            self.y=points[x][1]
+            break
 
     #Assign location
     def assign(self,a,b):
@@ -116,6 +128,8 @@ def assign():
 
 #function for map routing to move from source to destination
 def path_plan(source_x,source_y, dest_x,dest_y):
+    tmp_points=[]
+    tmp_distances=[]
     points=[]
     distances=[]
     for i in range(0,3):
@@ -127,8 +141,14 @@ def path_plan(source_x,source_y, dest_x,dest_y):
             if(tmp_x==source_x and tmp_y==source_y):
                 continue
             dist=findDistance(tmp_x,tmp_y,dest_x,dest_y)
-            points.append([tmp_x,tmp_y])
-            distances.append(dist)
+            tmp_points.append([tmp_x,tmp_y])
+            tmp_distances.append(dist)
+    for i in range(0,len(tmp_points)):
+        indexed=tmp_distances.index(min(tmp_distances))
+        points.append(tmp_points[indexed])
+        distances.append(tmp_distances[indexed])
+        tmp_distances.remove(distances[i])
+        tmp_points.remove(points[i])
     return points, distances
             
 
