@@ -2,7 +2,7 @@
 import numpy as np
 import math
 
-from urllib3 import connection_from_url
+
 
 
 #array for forest grid
@@ -74,11 +74,10 @@ class Drone:
         global drone_next_locations
         points,distances=path_plan(self.x,self.y,self.dest_x,self.dest_y)
         for x in range(0,8):
-            if points[x] in drone_locations or points[x] in drone_next_locations:
-                continue
-            self.x=points[x][0]
-            self.y=points[x][1]
-            break
+            if points[x] not in drone_locations and points[x] not in drone_next_locations:
+                break
+        self.x=points[x][0]
+        self.y=points[x][1]
 
     #Assign location
     def assign(self,a,b):
@@ -132,8 +131,8 @@ def path_plan(source_x,source_y, dest_x,dest_y):
     tmp_distances=[]
     points=[]
     distances=[]
-    for i in range(0,3):
-        for j in range (0,3):
+    for i in range(-1,2):
+        for j in range (-1,2):
             tmp_x=source_x+i
             tmp_y=source_y+j
             if(tmp_x<16 and tmp_y<16 and tmp_y>-1 and tmp_x>-1):
@@ -166,5 +165,5 @@ newpoint(7,5)
 #Cycle start
 #drones check existing location
 for i in range(0,9):
-    drone_arr[i].move_a()
+    drone_arr[i].move()
     drone_arr[i].check()
