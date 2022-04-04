@@ -6,6 +6,7 @@ def move(source_x,source_y, dest_x,dest_y):
     global drone_locations
     global drone_next_locations
     points,distances=path_plan(source_x,source_y,dest_x,dest_y)
+    #print(points, distances)
     for x in range(0,8):
         if points[x] not in drone_locations and points[x] not in drone_next_locations:
             break
@@ -90,7 +91,7 @@ while True:
 #         #print(1,end='')
 #     k+=1
 #     w-=1
-#     # print()
+#     # print()r
 
 
 

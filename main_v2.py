@@ -152,6 +152,22 @@ def path_plan(source_x,source_y, dest_x,dest_y):
             
 
 
+reference_arr[4][4]=1
+reference_arr[4][3]=1
+reference_arr[4][2]=1
+reference_arr[3][3]=1
+reference_arr[3][2]=1
+reference_arr[3][1]=1
+reference_arr[2][3]=1
+reference_arr[2][2]=1
+reference_arr[1][2]=1
+
+reference_arr[3][10]=1
+reference_arr[3][11]=1
+reference_arr[3][12]=1
+reference_arr[4][11]=1
+reference_arr[4][12]=1
+reference_arr[5][12]=1
 
 
 #main
@@ -162,8 +178,27 @@ for i in range(0,9):
 fire.append([7,5])
 newpoint(7,5)
 
+for i in range(0,8):
+    drone_arr[i].assign(fire_prob[i][0],fire_prob[i][1])
+    drone_arr[i].check()
+
+
 #Cycle start
 #drones check existing location
-for i in range(0,9):
-    drone_arr[i].move()
-    drone_arr[i].check()
+# for i in range(0,9):
+#     drone_arr[i].assign()
+#     drone_arr[i].move()
+#     drone_arr[i].check()
+
+while i<1000:
+    assign()
+    for i in range(0,9):
+        drone_arr[i].move()
+        drone_arr[i].check()
+    i+=1
+
+print("reference:")
+print(reference_arr)
+print()
+print("Forest")
+print(forest)
