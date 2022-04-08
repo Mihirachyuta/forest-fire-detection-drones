@@ -1,4 +1,5 @@
 
+
 import numpy as np
 import math
 
@@ -9,7 +10,7 @@ import math
 forest=np.zeros((16,16))
 reference_arr=np.zeros((16,16))
 drone_arr=[]
-fire=np.zeros((256,2))
+fire=[]
 
 #array for probable locations of fire
 fire_prob=np.zeros((256,2))
@@ -17,7 +18,7 @@ fp_p=0
 
 #array that shows the current locations of free drones
 free_Drone_local=[]
-no_free_drones=10
+no_free_drones=8
 drone_locations=[]
 drone_next_locations=[]
 #Array for locations checked
@@ -35,13 +36,20 @@ def newpoint(a,b):
     global fp_p
     for i in range(-1,2):
         for j in range(-1,2):
+            y=True
             tmp_x=a+i
             tmp_y=b+j
+            #print(tmp_x,tmp_y)
             if(tmp_x!=a or tmp_y!=b):
                 if(tmp_x<16 and tmp_y<16 and tmp_y>-1 and tmp_x>-1):
-                    fire_prob[fp_p][0]=tmp_x
-                    fire_prob[fp_p][1]=tmp_y
-                    fp_p+=1
+                    #print(fp_p,tmp_x,tmp_y)
+                    for z in range(0,256):
+                        if fire_prob[z][0]==tmp_x and fire_prob[z][1]==tmp_y:
+                            y=False
+                    if y:
+                        fire_prob[fp_p][0]=tmp_x
+                        fire_prob[fp_p][1]=tmp_y
+                        fp_p+=1
 
 #define drone class
 class Drone:
@@ -72,8 +80,11 @@ class Drone:
     def move(self):
         global drone_locations
         global drone_next_locations
+        if self.x==self.dest_x and self.y==self.dest_y:
+            return
         points,distances=path_plan(self.x,self.y,self.dest_x,self.dest_y)
-        for x in range(0,8):
+        #print(points)
+        for x in range(0,len(points)):
             if points[x] not in drone_locations and points[x] not in drone_next_locations:
                 break
         self.x=points[x][0]
@@ -94,10 +105,13 @@ class Drone:
         global forest
         global fp_p
         global fire_prob
+        global no_free_drones
         status=reference_arr[int(self.x)][int(self.y)]
         if(status==1):
             fire.append([int(self.x),int(self.y)])
             forest[int(self.x)][int(self.y)]=1
+            self.is_assigned=False
+            no_free_drones+=1
             newpoint(self.x,self.y)
             for j in range(0,fp_p):
                 if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
@@ -108,17 +122,21 @@ def assign():
     global no_free_drones
     global drone_arr
     global fire_prob
-    while(no_free_drones!=0):
-        for i in range(0,10):
+    while(no_free_drones>0):
+        for i in range(0,9):
             if(drone_arr[i].is_assigned==False):
+                #print(i)
                 min_dist=100
                 for j in range(0,fp_p):
                     d=findDistance(drone_arr[i].x,drone_arr[i].y,fire_prob[j][0],fire_prob[j][1])
+                    #print(d,i)
                     if(d<min_dist):
                         min_dist=d
                         drone_arr[i].dest_x=fire_prob[j][0]
                         drone_arr[i].dest_y=fire_prob[j][1]
                 drone_arr[i].is_assigned=True
+                no_free_drones-=1
+                print("Num free drones: ",no_free_drones)
                 
 
 
@@ -169,19 +187,25 @@ reference_arr[4][11]=1
 reference_arr[4][12]=1
 reference_arr[5][12]=1
 
-
+print(reference_arr)
 #main
 for i in range(0,9):
     drone_arr.append(Drone())
     drone_arr[i].setid(i)
-
-fire.append([7,5])
-newpoint(7,5)
-
+print(no_free_drones)
+fire.append([3,2])
+newpoint(3,2)
+#print(fire_prob)
 for i in range(0,8):
     drone_arr[i].assign(fire_prob[i][0],fire_prob[i][1])
+    no_free_drones-=1
+    drone_arr[i].is_assigned=True
+    #print(drone_arr[i].x,drone_arr[i].y)
     drone_arr[i].check()
 
+print(no_free_drones)
+
+#print("fire_prob",fire_prob)
 
 #Cycle start
 #drones check existing location
@@ -189,16 +213,33 @@ for i in range(0,8):
 #     drone_arr[i].assign()
 #     drone_arr[i].move()
 #     drone_arr[i].check()
-
-while i<1000:
+x=0
+while x<50:
     assign()
     for i in range(0,9):
-        drone_arr[i].move()
-        drone_arr[i].check()
-    i+=1
+        #print(drone_arr[i].dest_x,drone_arr[i].dest_y)
+            drone_arr[i].assign(drone_arr[i].dest_x,drone_arr[i].dest_y)
+            #print(drone_arr[i].x,drone_arr[i].y)
+            drone_arr[i].check()
+    x+=1
+
+    # for i in range(0,9):
+    #     if(drone_arr[i].is_assigned==False):
+    #         print(i)
+# x=0
+# while x<50:
+#     assign()
+#     #print(x," ",end='')
+#     for i in range(0,9):
+#         drone_arr[i].move()
+#         drone_arr[i].check()
+#     x+=1
 
 print("reference:")
 print(reference_arr)
 print()
 print("Forest")
 print(forest)
+
+# print("Fire")
+# print(fire_prob)
