@@ -99,6 +99,7 @@ def assign():
     global fire_prob
     
     for i in range(0,len(drone_arr)):
+        print(i,drone_arr[i].is_assigned)
         if(drone_arr[i].is_assigned==False):
             #print(i)
             min_dist=100
@@ -113,6 +114,17 @@ def assign():
                     drone_arr[i].dir=fire_prob[j][2]
                     drone_arr[i].is_assigned=True
                     drone_arr[i].is_goal_reached=False
+                    tmp=j
+            print(fire_prob)
+            print("drone",i,"assigned to",fire_prob[tmp][0]," ",fire_prob[tmp][1])
+            # try:
+            #     fire_prob.remove(fire_prob[tmp])
+            # except:
+            #     pass
+            # tp=[]
+            # tp.append(fire_prob[tmp])        
+            # fire_prob.remove(tp[0])
+            
 
 #drone class
 class Drone():
@@ -130,9 +142,12 @@ class Drone():
     is_assigned= False
     is_goal_reached=False
 
-    def assign(self,a,b):
+    def assign(self,a,b,c):
         self.x=a
         self.y=b
+        self.dir=c
+        self.is_assigned=True
+        self.is_goal_reached=True
         self.check()
 
     def setid(self,i):
@@ -152,12 +167,13 @@ class Drone():
             fire.append([int(self.x),int(self.y)])  #Appending to fire array
             forest[int(self.x)][int(self.y)]=1  #changing the status to 1 to compare with ref_arr
             newpoint(self.x,self.y)  #Adding probable fire locations
-            # for j in range(0,len(fire_prob)):
-            #     if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
-            #         try:
-            #             fire_prob.remove([int(self.x),int(self.y),int(self.dir)]) #remove from the fire_prob array
-            #         except(e):
-            #             print(e)
+        for j in range(0,len(fire_prob)):
+            if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
+                try:
+                    fire_prob.remove(fire_prob[j])
+                    break #remove from the fire_prob array
+                except Exception as e:
+                    print(e)
 
         else:
             self.is_assigned=False 
@@ -184,6 +200,7 @@ class Drone():
         #Checking if the goal is reached 
         if(self.x==self.dest_x and self.y==self.dest_y):
             self.is_goal_reached=True
+            self.check()
 
     def ripple_move(self):
         tmp_x=self.x
@@ -206,10 +223,11 @@ class Drone():
     def move(self):
         if self.is_goal_reached :
             self.ripple_move()
+            self.check()
         else:
             self.path_plan_move()
         
-        self.check()
+        
 
 
 
@@ -263,18 +281,21 @@ newpoint(3,2)
 for i in range(0,9):
     drone_arr.append(Drone())
     drone_arr[i].setid=i
-    drone_arr[i].assign(fire_prob[i][0],fire_prob[i][0])
-    drone_locations.append([fire_prob[i][0],fire_prob[i][0]])
+    drone_arr[i].assign(fire_prob[i][0],fire_prob[i][1],fire_prob[i][2])
+    drone_locations.append([fire_prob[i][0],fire_prob[i][1]])
 
 
 i=0
-while i<1000:
+while i<10:
     try:
         for j in range(0,9):
             drone_arr[j].move()
         assign()
     except KeyboardInterrupt:
         break
+    i+=1
 
 print("Reference arr: ",reference_arr)
 print("Forest arr: ",forest)
+print("checked points",checked_points)
+print("fire prob",fire_prob)
