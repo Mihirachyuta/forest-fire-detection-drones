@@ -1,6 +1,7 @@
 
 import numpy as np
 import math
+import requests
 
 #array for forest grid
 forest=np.zeros((16,16))
@@ -41,7 +42,10 @@ def get_direction(i,j):
         if(j==1):
             return 7 #W
 
-
+def generateMappedlocation(x,y):
+    lat=-1.976375-0.05*x 
+    lon=-63.278451+0.05*y
+    return lat,lon
 
 #Add probable locations of fire
 def newpoint(a,b):
@@ -116,16 +120,20 @@ def assign():
             #         drone_arr[i].is_goal_reached=False
             #         tmp=j
             
-            j=0
-            drone_arr[i].dest_x=fire_prob[j][0]
-            drone_arr[i].dest_y=fire_prob[j][1]
-            drone_arr[i].dir=fire_prob[j][2]
-            drone_arr[i].is_assigned=True
-            drone_arr[i].is_goal_reached=False
+            try:
+                j=0
+                drone_arr[i].dest_x=fire_prob[j][0]
+                drone_arr[i].dest_y=fire_prob[j][1]
+                drone_arr[i].dir=fire_prob[j][2]
+                drone_arr[i].is_assigned=True
+                drone_arr[i].is_goal_reached=False
+                
+                print(fire_prob)
+                print("drone",i,"assigned to",fire_prob[j][0]," ",fire_prob[j][1])
             
-            print(fire_prob)
-            print("drone",i,"assigned to",fire_prob[j][0]," ",fire_prob[j][1])
-            fire_prob.remove(fire_prob[j])
+                fire_prob.remove(fire_prob[j])
+            except:
+                pass
             # try:
             #     fire_prob.remove(fire_prob[tmp])
             # except:
@@ -162,6 +170,16 @@ class Drone():
     def setid(self,i):
         self.id=i
 
+    def sendCoordinates(self):
+        location=generateMappedlocation(self.x,self.y)
+        r=requests.post("http://127.0.0.1:5000/location",json={'id':self.id,'x':location[0],'y':location[1],'fire':True})
+        print(r.text,location,self.id,self.x,self.y)
+
+    def sendFireCoordinates(self):
+        location=generateMappedlocation(self.x,self.y)
+        r=requests.post("http://127.0.0.1:5000/fire",json={'x':location[0],'y':location[1]})
+        print(r.text,location,self.id,self.x,self.y)
+
     def check(self):
         global reference_arr
         global checked_points
@@ -173,6 +191,7 @@ class Drone():
         checked_points.append([self.x,self.y])
 
         if(status==1):
+            self.sendFireCoordinates()
             fire.append([int(self.x),int(self.y)])  #Appending to fire array
             forest[int(self.x)][int(self.y)]=1  #changing the status to 1 to compare with ref_arr
             newpoint(self.x,self.y)  #Adding probable fire locations
@@ -235,6 +254,7 @@ class Drone():
             self.check()
         else:
             self.path_plan_move()
+        self.sendCoordinates()
         
         
 
@@ -295,14 +315,17 @@ for i in range(0,9):
 
 
 i=0
-while i<10:
+while i<100:
     try:
         for j in range(0,9):
             drone_arr[j].move()
         assign()
+        if(fire_prob==[]):
+            break
     except KeyboardInterrupt:
         break
     i+=1
+    print(i)
 
 print("Reference arr: ",reference_arr)
 print("Forest arr: ",forest)
