@@ -102,21 +102,30 @@ def assign():
         print(i,drone_arr[i].is_assigned)
         if(drone_arr[i].is_assigned==False):
             #print(i)
-            min_dist=100
-            for j in range(0,len(fire_prob)):
-                d=findDistance(drone_arr[i].x,drone_arr[i].y,fire_prob[j][0],fire_prob[j][1])
-                #print(d,i)
-                if(d<min_dist):
-                    min_dist=d
-                    #print(min_dist)
-                    drone_arr[i].dest_x=fire_prob[j][0]
-                    drone_arr[i].dest_y=fire_prob[j][1]
-                    drone_arr[i].dir=fire_prob[j][2]
-                    drone_arr[i].is_assigned=True
-                    drone_arr[i].is_goal_reached=False
-                    tmp=j
+            # min_dist=100
+            # for j in range(0,len(fire_prob)):
+            #     d=findDistance(drone_arr[i].x,drone_arr[i].y,fire_prob[j][0],fire_prob[j][1])
+            #     #print(d,i)
+            #     if(d<min_dist):
+            #         min_dist=d
+            #         #print(min_dist)
+            #         drone_arr[i].dest_x=fire_prob[j][0]
+            #         drone_arr[i].dest_y=fire_prob[j][1]
+            #         drone_arr[i].dir=fire_prob[j][2]
+            #         drone_arr[i].is_assigned=True
+            #         drone_arr[i].is_goal_reached=False
+            #         tmp=j
+            
+            j=0
+            drone_arr[i].dest_x=fire_prob[j][0]
+            drone_arr[i].dest_y=fire_prob[j][1]
+            drone_arr[i].dir=fire_prob[j][2]
+            drone_arr[i].is_assigned=True
+            drone_arr[i].is_goal_reached=False
+            
             print(fire_prob)
-            print("drone",i,"assigned to",fire_prob[tmp][0]," ",fire_prob[tmp][1])
+            print("drone",i,"assigned to",fire_prob[j][0]," ",fire_prob[j][1])
+            fire_prob.remove(fire_prob[j])
             # try:
             #     fire_prob.remove(fire_prob[tmp])
             # except:
@@ -167,13 +176,13 @@ class Drone():
             fire.append([int(self.x),int(self.y)])  #Appending to fire array
             forest[int(self.x)][int(self.y)]=1  #changing the status to 1 to compare with ref_arr
             newpoint(self.x,self.y)  #Adding probable fire locations
-        for j in range(0,len(fire_prob)):
-            if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
-                try:
-                    fire_prob.remove(fire_prob[j])
-                    break #remove from the fire_prob array
-                except Exception as e:
-                    print(e)
+        # for j in range(0,len(fire_prob)):
+        #     if(self.x==fire_prob[j][0] and self.y==fire_prob[j][1]):
+        #         try:
+        #             fire_prob.remove(fire_prob[j])
+        #             break #remove from the fire_prob array
+        #         except Exception as e:
+        #             print(e)
 
         else:
             self.is_assigned=False 
